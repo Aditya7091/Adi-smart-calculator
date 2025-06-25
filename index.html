@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Smart Calculator</title>
+  <link rel="manifest" href="manifest.json" />
+  <link rel="icon" href="icon.png" />
+  <meta name="theme-color" content="#ff7675" />
+  <style>
+    :root {
+      --bg-light: linear-gradient(to right, #d9a7c7, #fffcdc);
+      --bg-dark: #1e1e1e;
+      --text-dark: #fff;
+      --display-bg-light: #f3f3f3;
+      --display-bg-dark: #333;
+      --button-bg: #ffffff;
+      --button-dark-bg: #444;
+    }
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      background: var(--bg-light);
+      transition: background 0.3s ease;
+    }
+    body.dark-mode {
+      background: var(--bg-dark);
+    }
+    .calculator {
+      width: 320px;
+      background: white;
+      padding: 20px;
+      border-radius: 25px;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+    }
+    body.dark-mode .calculator {
+      background: #2c2c2c;
+      color: var(--text-dark);
+    }
+    .display {
+      background: var(--display-bg-light);
+      height: 60px;
+      font-size: 2rem;
+      text-align: right;
+      padding: 10px 15px;
+      border-radius: 15px;
+      margin-bottom: 20px;
+    }
+    body.dark-mode .display {
+      background: var(--display-bg-dark);
+      color: var(--text-dark);
+    }
+    .buttons {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 15px;
+    }
+    button {
+      height: 60px;
+      font-size: 1.5rem;
+      border: none;
+      border-radius: 15px;
+      background: var(--button-bg);
+      transition: transform 0.1s;
+    }
+    body.dark-mode button {
+      background: var(--button-dark-bg);
+      color: var(--text-dark);
+    }
+    button:active {
+      transform: scale(0.95);
+    }
+    .equal { background-color: #ff7675; color: white; }
+    .operator { background-color: #a29bfe; color: white; }
+    .clear { background-color: #ffeaa7; }
+    .dark-toggle {
+      text-align: center;
+      margin-top: 10px;
+    }
+    .dark-toggle button {
+      padding: 10px 20px;
+      background: #74b9ff;
+      color: white;
+      border-radius: 10px;
+      border: none;
+      font-size: 1rem;
+    }
+    body.dark-mode .dark-toggle button {
+      background: #0984e3;
+    }
+  </style>
+</head>
+<body>
+  <div class="calculator">
+    <div class="display" id="display">0</div>
+    <div class="buttons">
+      <button class="clear" onclick="press('C')">C</button>
+      <button onclick="press('%')">%</button>
+      <button onclick="press('⌫')">⌫</button>
+      <button class="operator" onclick="press('/')">÷</button>
+      <button onclick="press('7')">7</button>
+      <button onclick="press('8')">8</button>
+      <button onclick="press('9')">9</button>
+      <button class="operator" onclick="press('*')">×</button>
+      <button onclick="press('4')">4</button>
+      <button onclick="press('5')">5</button>
+      <button onclick="press('6')">6</button>
+      <button class="operator" onclick="press('-')">−</button>
+      <button onclick="press('1')">1</button>
+      <button onclick="press('2')">2</button>
+      <button onclick="press('3')">3</button>
+      <button class="operator" onclick="press('+')">+</button>
+      <button onclick="press('0')">0</button>
+      <button onclick="press('.')">.</button>
+      <button class="equal" onclick="press('=')">=</button>
+    </div>
+    <div class="dark-toggle">
+      <button onclick="toggleDarkMode()">🌙 Dark Mode</button>
+    </div>
+  </div>
+  <script>
+    const display = document.getElementById("display");
+    function press(val) {
+      vibrate();
+      if (val === "C") {
+        display.innerText = "0";
+      } else if (val === "⌫") {
+        display.innerText = display.innerText.length === 1 ? "0" : display.innerText.slice(0, -1);
+      } else if (val === "=") {
+        try {
+          display.innerText = eval(display.innerText.replace('%', '/100'));
+        } catch {
+          display.innerText = "Error";
+        }
+      } else {
+        display.innerText = display.innerText === "0" ? val : display.innerText + val;
+      }
+    }
+    function toggleDarkMode() {
+      document.body.classList.toggle("dark-mode");
+      vibrate();
+    }
+    function vibrate() {
+      if (navigator.vibrate) navigator.vibrate(30);
+    }
+    document.addEventListener("keydown", function (e) {
+      const key = e.key;
+      if (!isNaN(key) || ".+-*/%".includes(key)) {
+        press(key);
+      } else if (key === "Enter") {
+        press("=");
+      } else if (key === "Backspace") {
+        press("⌫");
+      } else if (key === "Escape") {
+        press("C");
+      }
+    });
+  </script>
+</body>
+</html>
